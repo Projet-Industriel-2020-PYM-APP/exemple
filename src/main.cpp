@@ -205,7 +205,7 @@ void Batiment::positionner(int indiceSalle, int x, int y) {
   bool probleme = false;
   for (int i = 0; i < taille; i++) {
     if (positions[i].positionne) {
-        }
+    }
   }
   if (!probleme) {
     positions[indiceSalle].x = x;
