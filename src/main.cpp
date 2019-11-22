@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "Salle.hpp"
 
 int main()
@@ -6,4 +7,15 @@ int main()
 	s1.afficher();
 	
 	return 0;
+=======
+//psyche ! c'est pas l'annale.
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    cout << "hello world !" << endl;
+    return 0;
+>>>>>>> develop
 }
