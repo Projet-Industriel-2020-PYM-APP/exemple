@@ -1,170 +1,222 @@
-#include "examen.h"
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <string>
 using namespace std;
 
+const int NB_MAX_SALLES = 100;
 
-void lireFichier(string const& fichierSource, ListeClasses* liste);
+class Salle {
+ public:
+  Salle(string s = "", float la = 0, float lo = 0, int c = 0)
+      : nom(s), largeur(la), longueur(lo), capacite(c) {}
+  virtual void affichage() const {
+    cout << nom << " : largeur = " << largeur << "m, longueur = " << longueur
+         << "m, " << capacite << " places" << endl;
+  }
+  string getNom() const { return nom; }
+  float getLargeur() const { return largeur; }
+  float getLongueur() const { return longueur; }
+  int getCapacite() const { return capacite; }
+  bool operator==(Salle S) { return capacite == S.capacite; }
+  bool operator<(Salle S) { return capacite < S.capacite; }
 
-int main()
-{
-	/*Salle s1("E001", 15, 12, 35);
-	s1.afficher();
-		
-	cout << s1.getNom() << endl;
-	cout << s1.getLongueur() << endl;
-	cout << s1.getLargeur() << endl;
-	cout << s1.getNbPlaces() << endl << endl;
-		
-	Salle s2("E002", 15, 12, 35);
-	Salle s3("E001", 15, 12, 35);
-		
-	if(s1 == s2)
-		cout << "salle egale" << endl << endl;
-	else
-		cout << "salle differente" << endl << endl;
-		
-	if(s1 == s3)
-		cout << "salle egale" << endl << endl;
-	else
-		cout << "salle differente" << endl << endl;
-		
-	if(s1 <= s2)
-		cout << "salle egale" << endl << endl;
-	else
-			cout << "salle differente" << endl << endl;
-		
-	if(s1 < s2)
-		cout << "salle egale" << endl << endl;
-	else
-		cout << "salle differente" << endl << endl;
-			
-	cout << "///////////////////////////////Heritage//////////////////////" << endl << endl;
+ private:
+  string nom;
+  float largeur;
+  float longueur;
+  int capacite;
+};
 
-	SalleCours sC("C004", 17, 15, 39, true);
-	SalleCours sC2("C005", 17, 15, 39, false);
-	SalleInfo sI("A001", 14, 4, 7);	
-	SalleInfo sI2("A002", 4, 44, 75, 7);	
-	
-	Salle* sP1(&sC);
-	Salle* sP2(&sI);
-	Salle* sP3(&sI2);
-	Salle* sP4(&sC2);
-	
-	sP1->afficher();
-	sP2->afficher();
-	sP3->afficher();
-	sP4->afficher();
-	
-	cout << "/////////////////////Liste chainee////////////////////////////" << endl << endl;
+class SalleCours : public Salle {
+ public:
+  SalleCours(string s = "", float la = 0, float lo = 0, int c = 0, bool a = 0)
+      : Salle(s, la, lo, c), amphi(a) {}
+  void affichage() const {
+    cout << getNom();
+    if (amphi)
+      cout << " : amphi , ";
+    else
+      cout << " : salle normale , ";
+    cout << "largeur = " << getLargeur() << "m, longueur = " << getLongueur()
+         << "m, " << getCapacite() << " places" << endl;
+  }
 
-	cout << "///////////////////Liste" << endl << endl;
-	
-	ListeClasses lc;
-	lc.ajouter(sP1);
-	lc.ajouter(sP2);
-	lc.ajouter(sP3);
-	lc.ajouter(sP4);
-	lc.ajouter(&s1);
-	lc.ajouter(&s2);
-	lc.ajouter(&s3);
-	
-	cout << lc.getNbSalles() << endl << endl;
-	
-	Salle* sP5 = lc.getSalle(0);
-	sP5->afficher();
-	
-	lc.afficher();
-	
-	Salle* sP6 = lc.chercherSalle("C004");
-	sP6->afficher();
-	
-	Salle* sP7 = lc.chercherSalle("A102");
-	if(sP7 == 0)
-		cout << "Pas de salle" << endl << endl;
-	
-	cout << lc.chercherIndiceSalle("C004") << endl;
-	cout << lc.chercherIndiceSalle("A102") << endl;
-	
-	cout << "///////////////////Liste2" << endl << endl;
-	
-	ListeClasses lc2;
-	lc2.ajouter(sP1);
-	lc2.ajouter(sP2);
-	lc2.ajouter(sP3);
-	lc2.ajouter(sP4);
-	lc2.ajouter(&s1);
-	lc2.ajouter(&s2);
-	lc2.ajouter(&s3);
-	
-	cout << lc2.getNbSalles() << endl << endl;
-	
-	Salle* sP8 = lc2.getSalle(0);
-	sP8->afficher();
-	
-	lc2.afficher();
-	
-	Salle* sP9 = lc2.chercherSalle("C004");
-	sP9->afficher();
-	
-	Salle* sP10 = lc.chercherSalle("A102");
-	if(sP10 == 0)
-		cout << "Pas de salle" << endl << endl;
-	
-	cout << lc2.chercherIndiceSalle("C004") << endl;
-	cout << lc2.chercherIndiceSalle("A102") << endl;
-	
-	cout << "/////////////////concatenation" << endl << endl;
-	
-	ListeClasses lc3 = lc + lc2;
-	lc3.afficher();*/
+ private:
+  bool amphi;
+};
 
-	ListeClasses lc4;
-	lireFichier("Salle.txt", &lc4);
-	lc4.afficher();
+class SalleInfo : public Salle {
+ public:
+  SalleInfo(string s = "", float la = 0, float lo = 0, int c = 0, int n = 0)
+      : Salle(s, la, lo, c), nbpostes(n) {}
+  void affichage() const {
+    cout << getNom();
+    if (nbpostes != 0)
+      cout << " : " << nbpostes << " postes fixes , ";
+    else
+      cout << " : ordinateurs portables , ";
+    cout << "largeur = " << getLargeur() << "m, longueur = " << getLongueur()
+         << "m, " << getCapacite() << " places" << endl;
+  }
 
-	/*Batiment b(lc4);
-	b.positionner(0, 3.1, 4.7);
-	b.positionner("E106", 2.2, 7.6);
-	b.afficher();*/
+ private:
+  int nbpostes;
+};
 
-	return 0;
+class ListeSalles {
+ public:
+  ListeSalles() : nbsalles(0) {}
+  void ajouter(Salle* salle);
+  Salle* getSalle(int indice) const { return liste[indice]; }
+  Salle* getSalle_s(int indice) const;
+  int getNbsalles() const { return nbsalles; }
+  void affichage() const {
+    for (int i = 0; i < nbsalles; i++) liste[i]->affichage();
+  }
+  Salle* chercherSalle(const string& s) const;
+  int chercherIndiceSalle(const string& s) const;
+  ListeSalles operator+(const ListeSalles& L) const;
+
+ private:
+  Salle* liste[NB_MAX_SALLES];
+  int nbsalles;
+};
+
+struct PosSalle {
+  bool positionne;
+  float x;
+  float y;
+};
+
+class Batiment {
+ public:
+  Batiment(const ListeSalles& L2);
+  void positionner(int indiceSalle, int x, int y);
+  void positionner(const string& nom, int x, int y) {
+    int i = L.chercherIndiceSalle(nom);
+    positionner(i, x, y);
+  }
+  void affichage();
+
+ private:
+  ListeSalles L;
+  PosSalle positions[NB_MAX_SALLES];
+};
+
+void lireFicSalle(const string& nomFic, ListeSalles* liste);
+
+void ListeSalles::ajouter(Salle* salle) {
+  if (nbsalles < NB_MAX_SALLES) {
+    bool exist = false;
+    for (int i = 0; i < nbsalles; i++) {
+      if (liste[i]->getNom() == salle->getNom()) exist = true;
+    }
+    if (!exist) {
+      liste[nbsalles] = salle;
+      nbsalles++;
+    }
+  }
 }
 
-void lireFichier(string const& fichierSource, ListeClasses* liste)
-{
-	
-	ifstream input(fichierSource.c_str());
-	if(input)
-	{
-		while(!input.eof())
-		{
-			bool amphi;
-			string nom, typeSalle; 
-			long longueur, largeur, capacite, nbPostes;
-			
-			input >> typeSalle;
-			
-			if (typeSalle == "AMPHI")
-				amphi = true;
-			else
-				amphi = false;
-			
-			input >> nom >> longueur >> largeur >> capacite;
-			
-			if (typeSalle == "SALLE_INFO")
-				input >> nbPostes;
-				
-			if(!input.eof())
-			{
-			
-				if (typeSalle == "SALLE_INFO")
-					liste->ajouter(new SalleInfo(nom, longueur, largeur, capacite, nbPostes)); 
-				else
-					liste->ajouter(new SalleCours(nom, longueur, largeur, capacite, amphi));
-			}
-		}
-	}
-	else
-	{
-		cout << "Fichier inexistant" << endl;
-	}
+Salle* ListeSalles::chercherSalle(const string& s) const {
+  for (int i = 0; i < nbsalles; i++) {
+    if (liste[i]->getNom() == s) return liste[i];
+  }
+  return NULL;
+}
+
+int ListeSalles::chercherIndiceSalle(const string& s) const {
+  for (int i = 0; i < nbsalles; i++) {
+    if (liste[i]->getNom() == s) return i;
+  }
+  return -1;
+}
+
+ListeSalles ListeSalles::operator+(const ListeSalles& L) const {
+  ListeSalles* L2 = new ListeSalles;
+  int compteur = 0;
+  for (int i = 0; i < nbsalles; i++) {
+    L2->ajouter(liste[i]);
+    compteur++;
+  }
+  for (int j = 0; j < L.nbsalles && compteur < NB_MAX_SALLES; j++) {
+    if (L2->chercherIndiceSalle(L.liste[j]->getNom()) == -1) {
+      L2->ajouter(L.liste[j]);
+      compteur++;
+    }
+  }
+  return *L2;
+}
+
+Salle* ListeSalles::getSalle_s(int indice) const {
+  if (indice < 0 || indice >= nbsalles) throw exception();
+  return liste[indice];
+}
+
+Batiment::Batiment(const ListeSalles& L2) : L(L2) {
+  int taille = L2.getNbsalles();
+  for (int i = 0; i < taille; i++) {
+    PosSalle* p;
+    p->positionne = false;
+    positions[i] = *p;
+  }
+}
+
+void Batiment::affichage() {
+  int taille = L.getNbsalles();
+  for (int i = 0; i < taille; i++) {
+    Salle* s = L.getSalle_s(i);
+    s->affichage();
+    if (positions[i].positionne)
+      cout << "   position:" << positions[i].x << " , " << positions[i].y
+           << endl;
+  }
+}
+
+void lireFicSalle(const string& nomFic, ListeSalles* liste) {
+  int i = 0;
+  ifstream input(nomFic);
+  if (input) {
+    while (!input.eof() && i < NB_MAX_SALLES) {
+      string type, nom;
+      float longueur, largeur;
+      int capacite;
+      Salle* S;
+      input >> type >> nom >> longueur >> largeur >> capacite;
+
+      if (type == "SALLE_COURS")
+        S = new SalleCours(nom, largeur, longueur, capacite, 0);
+      else if (type == "SALLE_INFO") {
+        int nbpostes;
+        input >> nbpostes;
+        S = new SalleInfo(nom, largeur, longueur, capacite, nbpostes);
+      } else
+        S = new SalleCours(nom, largeur, longueur, capacite, 1);
+
+      (*liste).ajouter(S);
+      i++;
+    }
+  }
+}
+
+void Batiment::positionner(int indiceSalle, int x, int y) {
+  int taille = L.getNbsalles();
+  bool probleme = false;
+  for (int i = 0; i < taille; i++) {
+    if (positions[i].positionne) {
+    }
+  }
+  if (!probleme) {
+    positions[indiceSalle].x = x;
+    positions[indiceSalle].y = y;
+    positions[indiceSalle].positionne = true;
+  }
+}
+
+int main(void) {
+  ListeSalles L;
+  lireFicSalle("Salles.txt", &L);
+  L.affichage();
+  return 0;
 }
