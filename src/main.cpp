@@ -1,4 +1,20 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+#include "Salle.hpp"
+
+int main()
+{
+	SalleCours s1("C003", 12, 10, 35, 1);
+	s1.afficher();
+	
+	return 0;
+=======
+//psyche ! c'est pas l'annale.
+
+#include <iostream>
+=======
 #include "examen.h"
+>>>>>>> develop
 using namespace std;
 
 
@@ -6,6 +22,12 @@ void lireFichier(string const& fichierSource, ListeClasses* liste);
 
 int main()
 {
+<<<<<<< HEAD
+    cout << "hello world !" << endl;
+    return 0;
+>>>>>>> develop
+}
+=======
 	/*Salle s1("E001", 15, 12, 35);
 	s1.afficher();
 		
@@ -168,3 +190,4 @@ void lireFichier(string const& fichierSource, ListeClasses* liste)
 		cout << "Fichier inexistant" << endl;
 	}
 }
+>>>>>>> develop
